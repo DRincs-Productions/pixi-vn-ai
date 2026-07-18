@@ -6,7 +6,10 @@
     "build": "vite build"
   },
   "dependencies": {
-    "@drincs/pixi-vn": "^1.8.21"
+    "@drincs/pixi-vn": "^1.8.21",
+    "@mlc-ai/web-llm": "^0.2.84",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",

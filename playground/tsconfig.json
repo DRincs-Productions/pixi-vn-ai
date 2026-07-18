@@ -14,7 +14,7 @@
     "strict": true,
     "types": ["node"],
     "paths": {
-      "my-app-package-name": ["../src/index.ts"],
+      "@drincs/pixi-vn-ai": ["../src/index.ts"],
       "@/*": ["../src/*"]
     }
   },
