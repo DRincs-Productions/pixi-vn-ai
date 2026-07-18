@@ -13,7 +13,7 @@ export default defineConfig([
         minify: true,
         bundle: true,
         skipNodeModulesBundle: false,
-        external: ["@drincs/pixi-vn", "pixi.js"],
+        external: ["@drincs/pixi-vn", "pixi.js", "ai", "@mlc-ai/web-llm"],
         esbuildOptions(options) {
             options.alias = {
                 ...options.alias,

@@ -3,6 +3,7 @@
     "target": "ESNext",
     "experimentalDecorators": true,
     "module": "esnext",
+    "moduleResolution": "bundler",
     "paths": {
       "pixi.js": ["./node_modules/@drincs/pixi-vn/pixi.js"],
       "@/*": ["./src/*"]
@@ -15,7 +16,7 @@
     "forceConsistentCasingInFileNames": true,
     "strict": true,
     "skipLibCheck": true,
-    "ignoreDeprecations": "6.0"
+    "ignoreDeprecations": "5.0"
   },
   "include": ["src"]
 }

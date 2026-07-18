@@ -35,6 +35,9 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^2.4.12",
+    "@drincs/pixi-vn": "^1.8.25",
+    "@mlc-ai/web-llm": "^0.2.84",
+    "ai": "^7.0.31",
     "jsdom": "^29.0.2",
     "ts-node": "^10.9.2",
     "tsup": "^8.5.1",
@@ -44,7 +47,17 @@
     "vite-tsconfig-paths": "^6.1.1"
   },
   "peerDependencies": {
-    "@drincs/pixi-vn": ">=1.5.13"
+    "@drincs/pixi-vn": "*",
+    "@mlc-ai/web-llm": "*",
+    "ai": "*"
+  },
+  "peerDependenciesMeta": {
+    "@mlc-ai/web-llm": {
+      "optional": true
+    },
+    "ai": {
+      "optional": true
+    }
   },
   "dependencies": {
     "vitest": "^4.1.4"
