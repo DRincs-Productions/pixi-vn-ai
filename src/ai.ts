@@ -1,6 +1,6 @@
 import { buildPrompt } from "@/generators/GenerateEngine";
 import { getAIState, setAIState } from "@/init/AIState";
-import DefaultTemplates from "@/prompt/templates";
+import { DEAFAULT_IMAGE_TEMPLATE, DEFAULT_DIALOG_TEMPLATE } from "@/prompt";
 import AISDKProvider from "@/providers/AISDKProvider";
 import WebLLMProvider from "@/providers/WebLLMProvider";
 import type { GenerateOptions } from "@/types";
@@ -59,9 +59,9 @@ export namespace ai {
      */
     export namespace templates {
         // biome-ignore lint/style/useConst: reassigned by consumers, e.g. `templates.dialog = {...}`
-        export let dialog: PromptTemplate = DefaultTemplates.dialog;
+        export let dialog: PromptTemplate = DEFAULT_DIALOG_TEMPLATE;
         // biome-ignore lint/style/useConst: reassigned by consumers, e.g. `templates.image = {...}`
-        export let image: PromptTemplate = DefaultTemplates.image;
+        export let image: PromptTemplate = DEAFAULT_IMAGE_TEMPLATE;
     }
 
     export namespace dialog {
