@@ -43,13 +43,16 @@
       "import": "./dist/providers.mjs",
       "require": "./dist/providers.cjs",
       "default": "./dist/providers.mjs"
+    },
+    "./comfyui": {
+      "types": "./dist/comfyui.d.ts",
+      "import": "./dist/comfyui.mjs",
+      "require": "./dist/comfyui.cjs",
+      "default": "./dist/comfyui.mjs"
     }
   },
   "devDependencies": {
     "@biomejs/biome": "^2.4.12",
-    "@drincs/pixi-vn": "^1.8.25",
-    "@mlc-ai/web-llm": "^0.2.84",
-    "ai": "^7.0.31",
     "jsdom": "^29.0.2",
     "ts-node": "^10.9.2",
     "tsup": "^8.5.1",
@@ -61,7 +64,13 @@
   "peerDependencies": {
     "@drincs/pixi-vn": ">=1.8.25",
     "@mlc-ai/web-llm": ">=0.2.84",
+    "@stable-canvas/comfyui-client": ">=1.5.9",
     "ai": ">=7.0.31"
+  },
+  "peerDependenciesMeta": {
+    "@stable-canvas/comfyui-client": {
+      "optional": true
+    }
   },
   "dependencies": {
     "vitest": "^4.1.4"

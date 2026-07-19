@@ -49,8 +49,8 @@ describe("PromptBuilder", () => {
                 style: "Melancholic",
                 language: "English",
                 context: "The king is tired.",
-                speaker: { name: "King" },
-                listeners: [{ name: "Queen" }],
+                speaker: { id: "king" },
+                listeners: [{ id: "queen" }],
                 referenceImage: "ref.png",
                 backgroundImage: "bg.png",
                 align: { x: 0.5, y: 1 },
@@ -159,21 +159,21 @@ describe("PromptBuilder", () => {
         describe("speaker / listeners", () => {
             it("wraps a single character in an array and serializes it as JSON", async () => {
                 const sections = await PromptBuilder.buildSections(template, "Generate a greeting.", {
-                    speaker: { name: "King" },
+                    speaker: { id: "king" },
                 });
                 const speaker = sections.find((s) => s.title === "Speaker");
                 expect(speaker?.description).toBe("The character(s) speaking, serialized as JSON.");
-                expect(JSON.parse(speaker!.content)).toEqual([{ name: "King" }]);
+                expect(JSON.parse(speaker!.content)).toEqual([{ id: "king" }]);
             });
 
             it("keeps an array of characters as-is", async () => {
                 const sections = await PromptBuilder.buildSections(template, "Generate a greeting.", {
-                    listeners: [{ name: "Queen" }, { name: "Advisor" }],
+                    listeners: [{ id: "queen" }, { id: "advisor" }],
                 });
                 const listeners = sections.find((s) => s.title === "Listeners");
                 expect(JSON.parse(listeners!.content)).toEqual([
-                    { name: "Queen" },
-                    { name: "Advisor" },
+                    { id: "queen" },
+                    { id: "advisor" },
                 ]);
             });
 

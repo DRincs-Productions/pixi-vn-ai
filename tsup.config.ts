@@ -7,6 +7,7 @@ export default defineConfig([
             index: "src/index.ts",
             prompt: "src/prompt/index.ts",
             providers: "src/providers/index.ts",
+            comfyui: "src/comfyui/index.ts",
         },
         format: ["cjs", "esm"],
         dts: true,
@@ -15,7 +16,13 @@ export default defineConfig([
         minify: true,
         bundle: true,
         skipNodeModulesBundle: false,
-        external: ["@drincs/pixi-vn", "pixi.js", "ai", "@mlc-ai/web-llm"],
+        external: [
+            "@drincs/pixi-vn",
+            "pixi.js",
+            "ai",
+            "@mlc-ai/web-llm",
+            "@stable-canvas/comfyui-client",
+        ],
         esbuildOptions(options) {
             options.alias = {
                 ...options.alias,
