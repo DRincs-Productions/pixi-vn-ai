@@ -1,8 +1,17 @@
 import { buildPrompt } from "@/generators/GenerateEngine";
 import { getAIState, setAIState } from "@/init/AIState";
+import DefaultTemplates from "@/prompt/DefaultTemplates";
+import AISDKProvider from "@/providers/AISDKProvider";
+import WebLLMProvider from "@/providers/WebLLMProvider";
 import type { GenerateOptions } from "@/types";
-import type AIProvider from "@/types/AIProvider";
-import type Templates from "@/types/Templates";
+import type PromptTemplate from "@/types/PromptTemplate";
+import { CreateMLCEngine } from "@mlc-ai/web-llm";
+import type { ImageModel, LanguageModel } from "ai";
+
+/**
+ * Built-in local model used by `ai.init` when neither `textProvider` nor `imageProvider` is given.
+ */
+const DEFAULT_WEBLLM_MODEL = "SmolLM2-360M-Instruct-q4f16_1-MLC";
 
 /**
  * The small, provider-independent public API of Pixi'VN AI.
@@ -15,19 +24,44 @@ export namespace ai {
     /**
      * Initialize Pixi'VN AI. Call this once, typically at application startup, before using
      * `ai.dialog.generate` or `ai.image.generate`.
-     * @param options The provider (required) and templates (optional) to use.
+     *
+     * When neither option is given, a small local [WebLLM](https://github.com/mlc-ai/web-llm)
+     * model is downloaded and used for dialogue generation (no image support).
+     * @param options The [AI SDK](https://ai-sdk.dev) models to use.
      */
-    export function init(options: {
+    export async function init(options?: {
         /**
-         * The provider used by the whole library (WebLLM, an AI SDK model, or a custom provider).
+         * Language model used for `ai.dialog.generate`, and as a fallback for `ai.image.generate`
+         * on multimodal models (e.g. Gemini image generation).
          */
-        provider: AIProvider;
+        textProvider?: LanguageModel;
         /**
-         * Templates to override the built-in ones. Any template left out falls back to the default.
+         * Image model used for `ai.image.generate`.
          */
-        templates?: Partial<Templates>;
-    }): void {
-        setAIState(options.provider, options.templates);
+        imageProvider?: ImageModel;
+    }): Promise<void> {
+        const { textProvider, imageProvider } = options ?? {};
+        if (textProvider || imageProvider) {
+            setAIState(
+                new AISDKProvider({ languageModel: textProvider, imageModel: imageProvider }),
+            );
+            return;
+        }
+
+        const engine = await CreateMLCEngine(DEFAULT_WEBLLM_MODEL);
+        setAIState(new WebLLMProvider(engine));
+    }
+
+    /**
+     * The templates used to build the prompts sent by `ai.dialog.generate` and `ai.image.generate`.
+     *
+     * Assign to `templates.dialog` / `templates.image` to override the built-in template.
+     */
+    export namespace templates {
+        // biome-ignore lint/style/useConst: reassigned by consumers, e.g. `templates.dialog = {...}`
+        export let dialog: PromptTemplate = DefaultTemplates.dialog;
+        // biome-ignore lint/style/useConst: reassigned by consumers, e.g. `templates.image = {...}`
+        export let image: PromptTemplate = DefaultTemplates.image;
     }
 
     export namespace dialog {

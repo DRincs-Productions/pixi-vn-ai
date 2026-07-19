@@ -1,20 +1,7 @@
 import { stepHistory, type NarrationHistory } from "@drincs/pixi-vn";
-import {
-    ai,
-    DialogTemplate,
-    PromptBuilder,
-    WebLLMProvider,
-    type GenerateOptions,
-} from "@drincs/pixi-vn-ai";
-import type { InitProgressReport } from "@mlc-ai/web-llm";
+import { ai, DialogTemplate, PromptBuilder, type GenerateOptions } from "@drincs/pixi-vn-ai";
 import { useEffect, useState } from "react";
 import { runIntroLabel } from "./labels/introLabel";
-
-const MODEL_OPTIONS = [
-  "SmolLM2-360M-Instruct-q4f16_1-MLC",
-  "Llama-3.2-1B-Instruct-q4f16_1-MLC",
-  "Qwen2.5-1.5B-Instruct-q4f16_1-MLC",
-];
 
 const SPEAKER = { name: "King", mood: "anxious" };
 const LISTENER = { name: "Advisor" };
@@ -38,9 +25,7 @@ function renderDialogueLine(item: NarrationHistory, index: number) {
 export default function App() {
   const [history, setHistory] = useState<NarrationHistory[]>([]);
 
-  const [modelId, setModelId] = useState(MODEL_OPTIONS[0]);
   const [loadingModel, setLoadingModel] = useState(false);
-  const [loadingProgress, setLoadingProgress] = useState("");
   const [modelReady, setModelReady] = useState(false);
 
   const [request, setRequest] = useState(
@@ -77,18 +62,11 @@ export default function App() {
     };
   }
 
-  async function handleLoadModel() {
+  async function handleInitAI() {
     setLoadingModel(true);
     setError("");
-    setLoadingProgress("Starting download…");
     try {
-      const { CreateMLCEngine } = await import("@mlc-ai/web-llm");
-      const engine = await CreateMLCEngine(modelId, {
-        initProgressCallback: (report: InitProgressReport) => {
-          setLoadingProgress(report.text);
-        },
-      });
-      ai.init({ provider: new WebLLMProvider(engine) });
+      await ai.init();
       setModelReady(true);
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
@@ -140,32 +118,22 @@ export default function App() {
         <h2>@drincs/pixi-vn-ai playground</h2>
 
         <fieldset style={{ marginBottom: 16 }}>
-          <legend>1. Load a WebLLM model</legend>
-          <select
-            value={modelId}
-            disabled={loadingModel || modelReady}
-            onChange={(e) => setModelId(e.target.value)}
-          >
-            {MODEL_OPTIONS.map((id) => (
-              <option key={id} value={id}>
-                {id}
-              </option>
-            ))}
-          </select>{" "}
+          <legend>1. Initialize AI</legend>
+          <p style={{ fontSize: 13, color: "#666" }}>
+            No provider configured: `ai.init()` downloads and loads a small
+            local WebLLM model the first time it runs.
+          </p>
           <button
             type="button"
-            onClick={handleLoadModel}
+            onClick={handleInitAI}
             disabled={loadingModel || modelReady}
           >
             {modelReady
-              ? "Model ready"
+              ? "AI ready"
               : loadingModel
                 ? "Loading…"
-                : "Load model"}
+                : "Initialize AI"}
           </button>
-          {loadingModel && (
-            <p style={{ fontSize: 13, color: "#666" }}>{loadingProgress}</p>
-          )}
         </fieldset>
 
         <fieldset style={{ marginBottom: 16 }}>

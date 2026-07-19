@@ -2,7 +2,7 @@
  * A prompt template supplies the static instructions injected as the first section of a
  * generated prompt (e.g. output format rules). Everything else (developer request, history,
  * scene, ...) is assembled by the {@link PromptBuilder}, so templates stay small and easy to
- * override during {@link ai.init}.
+ * override via {@link ai.templates}.
  */
 export default interface PromptTemplate {
     /**

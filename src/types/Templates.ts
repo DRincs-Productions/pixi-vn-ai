@@ -3,7 +3,7 @@ import type PromptTemplate from "./PromptTemplate";
 /**
  * The set of templates used to build prompts.
  *
- * Passed (partially or fully) to {@link ai.init} to override the built-in templates.
+ * Assign to {@link ai.templates} to override the built-in templates.
  */
 export default interface Templates {
     /**

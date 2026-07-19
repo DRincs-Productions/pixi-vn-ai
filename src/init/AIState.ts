@@ -1,10 +1,7 @@
-import DefaultTemplates from "../prompt/DefaultTemplates";
 import type AIProvider from "../types/AIProvider";
-import type Templates from "../types/Templates";
 
 interface AIState {
     provider: AIProvider;
-    templates: Templates;
 }
 
 let state: AIState | undefined;
@@ -12,14 +9,8 @@ let state: AIState | undefined;
 /**
  * Set the global AI state. Used internally by `ai.init`.
  */
-export function setAIState(provider: AIProvider, templates?: Partial<Templates>): void {
-    state = {
-        provider,
-        templates: {
-            dialog: templates?.dialog ?? DefaultTemplates.dialog,
-            image: templates?.image ?? DefaultTemplates.image,
-        },
-    };
+export function setAIState(provider: AIProvider): void {
+    state = { provider };
 }
 
 /**
@@ -28,7 +19,7 @@ export function setAIState(provider: AIProvider, templates?: Partial<Templates>)
 export function getAIState(): AIState {
     if (!state) {
         throw new Error(
-            "Pixi'VN AI has not been initialized. Call ai.init({ provider }) before using ai.dialog or ai.image.",
+            "Pixi'VN AI has not been initialized. Call ai.init({ textProvider }) before using ai.dialog or ai.image.",
         );
     }
     return state;
