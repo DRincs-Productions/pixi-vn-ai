@@ -43,12 +43,12 @@ export namespace Provider {
 
     /**
      * Initialize Pixi'VN AI. Call this once, typically at application startup, before using
-     * `ai.dialog.generate`, `ai.image.generateBackground` or `ai.image.generateElement`.
+     * `ai.text.generateDialog`, `ai.image.generateBackground` or `ai.image.generateElement`.
      * @param options The [AI SDK](https://ai-sdk.dev) models to use.
      */
     export async function init(options?: {
         /**
-         * Language model used for `ai.dialog.generate`, and as a fallback for image generation on
+         * Language model used for `ai.text.generateDialog`, and as a fallback for image generation on
          * multimodal models (e.g. Gemini image generation).
          */
         textProvider?: LanguageModel;

@@ -9,12 +9,13 @@ import type ImageGenerateOptions from "./ImageGenerateOptions";
  */
 export default interface ElementImageGenerateOptions extends ImageGenerateOptions {
     /**
-     * The background image this element will be placed over, so the model can compose the
-     * subject coherently with what's behind it (lighting, perspective, scale, ...).
+     * The background image (a URL or a data URI) this element will be placed over, so the model
+     * can compose the subject coherently with what's behind it (lighting, perspective, scale,
+     * ...).
      *
      * Forwarded to the provider as the reference image when {@link referenceImage} isn't set.
      */
-    backgroundImage?: unknown;
+    backgroundImage?: string;
     /**
      * Horizontal position of the element within the canvas, as a 0-1 fraction of the distance
      * from the left edge: `0` = flush against the left edge, `1` = flush against the right edge,

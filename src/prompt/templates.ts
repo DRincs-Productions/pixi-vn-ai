@@ -1,7 +1,7 @@
 import type { PromptTemplate } from "@/types";
 
 /**
- * Built-in template used by {@link ai.dialog.generate}.
+ * Built-in template used by {@link ai.text.generateDialog}.
  *
  * Instructs the model to produce output that Pixi'VN can render directly: simple, readable
  * Markdown, with HTML allowed only when it's the only way to achieve a visual effect.

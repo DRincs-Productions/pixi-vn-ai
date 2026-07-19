@@ -1,7 +1,7 @@
 import { narration, newLabel } from "@drincs/pixi-vn";
 
 // A tiny scripted scene used only to populate Pixi'VN's narrative history,
-// so the playground has something real to feed into `ai.dialog.generate({ history: true })`.
+// so the playground has something real to feed into `ai.text.generateDialog({ history: true })`.
 export const introLabel = newLabel("pixi-vn-ai-playground-intro", [
     async () => {
         narration.dialogue = {

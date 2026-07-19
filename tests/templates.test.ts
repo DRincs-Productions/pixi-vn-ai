@@ -1,7 +1,15 @@
-import { ai } from "@/index";
-import { setAIState } from "@/init/AIState";
-import type AIProvider from "@/types/AIProvider";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
+const providerMock = vi.hoisted(() => ({
+    Provider: {
+        init: vi.fn(),
+        generateText: vi.fn(),
+        generateImage: vi.fn(),
+    },
+}));
+vi.mock("@/providers", () => providerMock);
+
+const { ai } = await import("@/index");
 
 describe("ai.templates", () => {
     const originalDialog = ai.templates.dialog;
@@ -10,16 +18,17 @@ describe("ai.templates", () => {
         ai.templates.dialog = originalDialog;
     });
 
-    it("is used when building the prompt sent by ai.dialog.generate", async () => {
+    beforeEach(() => {
+        vi.clearAllMocks();
+        providerMock.Provider.generateText.mockResolvedValue("ok");
+    });
+
+    it("is used when building the prompt sent by ai.text.generateDialog", async () => {
         ai.templates.dialog = { instructions: "Be extremely terse." };
 
-        const generateText = vi.fn().mockResolvedValue("ok");
-        const provider: AIProvider = { name: "mock-provider", dialog: { generateText } };
-        setAIState(provider);
+        await ai.text.generateDialog("Say hello.");
 
-        await ai.dialog.generate("Say hello.");
-
-        const prompt = generateText.mock.calls[0][0];
+        const prompt = providerMock.Provider.generateText.mock.calls[0][0];
         expect(prompt).toContain("Be extremely terse.");
     });
 });

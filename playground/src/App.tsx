@@ -89,7 +89,7 @@ export default function App() {
     setError("");
     setResult("");
     try {
-      const text = await ai.dialog.generate(request, buildOptions());
+      const text = await ai.text.generateDialog(request, buildOptions());
       setResult(text);
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
@@ -111,7 +111,7 @@ export default function App() {
         <h2>Story so far</h2>
         <p style={{ color: "#666", fontSize: 14 }}>
           Played automatically on load via Pixi'VN's narration, this is the
-          narrative history `ai.dialog.generate` can inject when `history:
+          narrative history `ai.text.generateDialog` can inject when `history:
           true`.
         </p>
         {history.map(renderDialogueLine)}

@@ -1,5 +1,6 @@
 /**
- * Options shared by {@link ai.dialog.generate} and {@link ai.image.generate}.
+ * Options shared by {@link ai.text.generateDialog}, {@link ai.image.generateBackground} and
+ * {@link ai.image.generateElement}.
  *
  * These options describe *what* should be included in the generated prompt.
  * The actual prompt text is always assembled internally by the {@link PromptBuilder}.

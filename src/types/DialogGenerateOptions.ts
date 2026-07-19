@@ -4,7 +4,7 @@ import type GenerateOptions from "./GenerateOptions";
 type CharacterItem = CharacterInterface | CharacterIdType;
 
 /**
- * Options accepted by {@link ai.dialog.generate}.
+ * Options accepted by {@link ai.text.generateDialog}.
  */
 export default interface DialogGenerateOptions extends GenerateOptions {
     /**

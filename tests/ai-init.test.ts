@@ -24,7 +24,7 @@ describe("ai.init", () => {
         await ai.init({ textProvider: "mock-model" as never });
 
         expect(webllmMock.CreateMLCEngine).not.toHaveBeenCalled();
-        const result = await ai.dialog.generate("Say hello.");
+        const result = await ai.text.generateDialog("Say hello.");
         expect(result).toBe("Hello there.");
         expect(aiSdkMock.generateText).toHaveBeenCalledWith(
             expect.objectContaining({ model: "mock-model" }),
@@ -44,9 +44,9 @@ describe("ai.init", () => {
         webllmMock.CreateMLCEngine.mockResolvedValue(engine);
 
         await ai.init();
+        const result = await ai.text.generateDialog("Say hello.");
 
         expect(webllmMock.CreateMLCEngine).toHaveBeenCalledWith("SmolLM2-360M-Instruct-q4f16_1-MLC");
-        const result = await ai.dialog.generate("Say hello.");
         expect(result).toBe("Local reply.");
     });
 });

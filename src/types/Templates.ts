@@ -7,7 +7,7 @@ import type PromptTemplate from "./PromptTemplate";
  */
 export default interface Templates {
     /**
-     * Template used by {@link ai.dialog.generate}.
+     * Template used by {@link ai.text.generateDialog}.
      */
     dialog: PromptTemplate;
     /**
