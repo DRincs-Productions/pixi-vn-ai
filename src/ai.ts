@@ -11,6 +11,7 @@ import type {
     ElementImageGenerateOptions,
 } from "@/types";
 import type PromptTemplate from "@/types/PromptTemplate";
+import { resolveAssetUrl } from "@/utils";
 import { canvas } from "@drincs/pixi-vn/canvas";
 import type { ImageModel, LanguageModel } from "ai";
 
@@ -98,7 +99,10 @@ export namespace ai {
             const prompt = PromptBuilder.build(templates.image.background, request, options, [
                 { title: "Canvas Size", content: `${canvas.width}x${canvas.height}` },
             ]);
-            return Provider.generateImage(prompt, options?.referenceImage);
+            return Provider.generateImage(
+                prompt,
+                options?.referenceImage ? resolveAssetUrl(options.referenceImage) : undefined,
+            );
         }
 
         /**
@@ -106,9 +110,8 @@ export namespace ai {
          * completely hiding prompt engineering.
          *
          * The image is meant to be layered on top of other visuals: the area behind the subject
-         * is transparent, and {@link ElementImageGenerateOptions.xAlign}/
-         * {@link ElementImageGenerateOptions.yAlign} describe where it will be positioned so the
-         * model can compose it accordingly.
+         * is transparent, and {@link ElementImageGenerateOptions.align} describes where it will
+         * be positioned so the model can compose it accordingly.
          * @param request Natural language description of the element to generate.
          * @param options Options controlling which context gets included in the prompt.
          * @returns The generated image, as a data URI, ready to use directly as a Pixi'VN image
@@ -119,9 +122,10 @@ export namespace ai {
             options?: ElementImageGenerateOptions,
         ): Promise<string> {
             const prompt = PromptBuilder.build(templates.image.element, request, options);
+            const assetAlias = options?.referenceImage ?? options?.backgroundImage;
             return Provider.generateImage(
                 prompt,
-                options?.referenceImage ?? options?.backgroundImage,
+                assetAlias ? resolveAssetUrl(assetAlias) : undefined,
             );
         }
     }

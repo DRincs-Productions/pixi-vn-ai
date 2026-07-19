@@ -1,3 +1,4 @@
+import type { AssetAliasIdType } from "@drincs/pixi-vn";
 import type GenerateOptions from "./GenerateOptions";
 
 /**
@@ -9,5 +10,5 @@ export default interface ImageGenerateOptions extends GenerateOptions {
      * `ai.image.generateBackground`/`ai.image.generateElement` call), forwarded to providers that
      * support image-to-image generation.
      */
-    referenceImage?: string;
+    referenceImage?: AssetAliasIdType;
 }

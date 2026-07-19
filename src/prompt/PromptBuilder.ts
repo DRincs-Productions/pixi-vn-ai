@@ -52,8 +52,7 @@ export namespace PromptBuilder {
             language,
             referenceImage,
             backgroundImage,
-            xAlign,
-            yAlign,
+            align,
         } = options;
 
         sections.push({ title: "Instructions", content: template.instructions });
@@ -128,21 +127,13 @@ export namespace PromptBuilder {
             });
         }
 
-        if (xAlign !== undefined || yAlign !== undefined) {
+        if (align) {
+            const alignJson = JSON.stringify(align, null, 2);
             sections.push({
                 title: "Alignment",
                 description:
-                    "Where the element will be positioned on the canvas, as a 0-1 fraction of the distance from each edge (0 = flush against the start edge, 1 = flush against the end edge, 0.5 = centered).",
-                content: [
-                    xAlign !== undefined
-                        ? `xAlign (horizontal, from the left edge): ${xAlign}`
-                        : undefined,
-                    yAlign !== undefined
-                        ? `yAlign (vertical, from the top edge): ${yAlign}`
-                        : undefined,
-                ]
-                    .filter((line) => line !== undefined)
-                    .join("\n"),
+                    "Where the element will be positioned on the canvas: x and y are each a 0-1 fraction of the canvas' width/height, and that same fraction is also used as the element's own anchor point, so the value describes both where on the canvas the point sits and which point of the element is placed there. 0 = the element's left/top edge is flush against the canvas' left/top edge, 1 = the element's right/bottom edge is flush against the canvas' right/bottom edge, 0.5 = the element is centered on that axis.",
+                content: alignJson,
             });
         }
 

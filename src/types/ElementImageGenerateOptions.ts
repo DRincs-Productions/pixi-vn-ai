@@ -1,11 +1,12 @@
+import type { AssetAliasIdType } from "@drincs/pixi-vn";
 import type ImageGenerateOptions from "./ImageGenerateOptions";
 
 /**
  * Options accepted by {@link ai.image.generateElement}.
  *
  * Generates a single visual element (e.g. a character) meant to be layered on top of other
- * visuals: the area behind the subject is transparent, and {@link xAlign}/{@link yAlign} describe
- * where it will be positioned on screen so the model can compose it accordingly.
+ * visuals: the area behind the subject is transparent, and {@link align} describes where it will
+ * be positioned on screen so the model can compose it accordingly.
  */
 export default interface ElementImageGenerateOptions extends ImageGenerateOptions {
     /**
@@ -15,17 +16,24 @@ export default interface ElementImageGenerateOptions extends ImageGenerateOption
      *
      * Forwarded to the provider as the reference image when {@link referenceImage} isn't set.
      */
-    backgroundImage?: string;
+    backgroundImage?: AssetAliasIdType;
     /**
-     * Horizontal position of the element within the canvas, as a 0-1 fraction of the distance
-     * from the left edge: `0` = flush against the left edge, `1` = flush against the right edge,
-     * `0.5` = horizontally centered.
+     * Position of the element within the canvas (Pixi'VN's `align`, see
+     * https://pixi-vn.com/start/canvas-position). Each axis is a 0-1 fraction of the canvas'
+     * width/height that is also used as the element's own anchor on that axis, so the value
+     * describes both where on the canvas the point sits and which point of the element is placed
+     * there: `0` = the element's left/top edge is flush against the canvas' left/top edge, `1` =
+     * the element's right/bottom edge is flush against the canvas' right/bottom edge, `0.5` =
+     * centered on that axis.
      */
-    xAlign?: number;
-    /**
-     * Vertical position of the element within the canvas, as a 0-1 fraction of the distance from
-     * the top edge: `0` = flush against the top edge, `1` = flush against the bottom edge,
-     * `0.5` = vertically centered.
-     */
-    yAlign?: number;
+    align?: {
+        /**
+         * Horizontal position, as a 0-1 fraction of the canvas' width.
+         */
+        x: number;
+        /**
+         * Vertical position, as a 0-1 fraction of the canvas' height.
+         */
+        y: number;
+    };
 }

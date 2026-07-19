@@ -47,15 +47,14 @@ describe("ai.image.generateBackground / ai.image.generateElement", () => {
     it("generates an element image, falling back to the background image as reference and including alignment", async () => {
         const result = await ai.image.generateElement("Generate the advisor.", {
             backgroundImage: "bg.png",
-            xAlign: 0.8,
-            yAlign: 1,
+            align: { x: 0.8, y: 1 },
         });
         expect(result).toBe("data:image/png;base64,abc123");
         expect(providerMock.Provider.generateImage).toHaveBeenCalledWith(expect.any(String), "bg.png");
         const prompt = providerMock.Provider.generateImage.mock.calls[0][0];
         expect(prompt).toContain("## Alignment");
-        expect(prompt).toContain("xAlign (horizontal, from the left edge): 0.8");
-        expect(prompt).toContain("yAlign (vertical, from the top edge): 1");
+        expect(prompt).toContain('"x": 0.8');
+        expect(prompt).toContain('"y": 1');
     });
 
     it("prefers the explicit reference image over the background image for an element", async () => {
