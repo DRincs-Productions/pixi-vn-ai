@@ -6,8 +6,6 @@ import { runIntroLabel } from "./labels/introLabel";
 const SPEAKER = { name: "King", mood: "anxious" };
 const LISTENER = { name: "Advisor" };
 
-const promptBuilder = new PromptBuilder();
-
 function renderDialogueLine(item: NarrationHistory, index: number) {
   if (!item.dialogue) {
     return null;
@@ -77,7 +75,7 @@ export default function App() {
 
   function handlePreviewPrompt() {
     setPromptPreview(
-      promptBuilder.build(DialogTemplate, request, buildOptions()),
+      PromptBuilder.build(DialogTemplate, request, buildOptions()),
     );
   }
 

@@ -6,18 +6,18 @@ import type PromptTemplate from "../types/PromptTemplate";
 /**
  * Centralizes prompt construction so that generators never concatenate strings directly.
  *
- * The builder assembles a prompt out of independent {@link PromptSection}s (instructions,
- * developer request, narrative history, scene, ...), including only the sections that are
- * actually relevant for the given request.
+ * Assembles a prompt out of independent {@link PromptSection}s (instructions, developer request,
+ * narrative history, scene, ...), including only the sections that are actually relevant for the
+ * given request.
  */
-export default class PromptBuilder {
+export namespace PromptBuilder {
     /**
      * Assemble the sections of a prompt, without applying any specific format to the final string.
      * @param template The template supplying the instructions section.
      * @param request The developer's natural language request.
      * @param options The generate options driving which sections get included.
      */
-    buildSections(
+    export function buildSections(
         template: PromptTemplate,
         request: string,
         options: GenerateOptions = {},
@@ -80,8 +80,12 @@ export default class PromptBuilder {
      * @param request The developer's natural language request.
      * @param options The generate options driving which sections get included.
      */
-    build(template: PromptTemplate, request: string, options: GenerateOptions = {}): string {
-        return this.buildSections(template, request, options)
+    export function build(
+        template: PromptTemplate,
+        request: string,
+        options: GenerateOptions = {},
+    ): string {
+        return buildSections(template, request, options)
             .map((section) => `## ${section.title}\n${section.content}`)
             .join("\n\n");
     }

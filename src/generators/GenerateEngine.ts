@@ -1,10 +1,8 @@
+import { ai } from "../ai";
 import { getAIState } from "../init/AIState";
-import PromptBuilder from "../prompt/PromptBuilder";
-import { templates } from "../templates";
+import { PromptBuilder } from "../prompt/PromptBuilder";
 import type GenerateOptions from "../types/GenerateOptions";
 import type Templates from "../types/Templates";
-
-const promptBuilder = new PromptBuilder();
 
 /**
  * Build the final prompt for a given template kind (dialog/image), applying whichever template
@@ -15,7 +13,7 @@ export function buildPrompt(
     request: string,
     options?: GenerateOptions,
 ): string {
-    return promptBuilder.build(templates[templateKind], request, options);
+    return PromptBuilder.build(ai.templates[templateKind], request, options);
 }
 
 export { getAIState };
