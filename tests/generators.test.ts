@@ -1,4 +1,4 @@
-import { ai, initAI } from "@/index";
+import { ai } from "@/index";
 import type AIProvider from "@/types/AIProvider";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -15,7 +15,7 @@ describe("ai.dialog.generate / ai.image.generate", () => {
                 generateImage: vi.fn().mockResolvedValue({ url: "https://example.com/image.png" }),
             },
         };
-        initAI({ provider });
+        ai.init({ provider });
     });
 
     it("generates dialogue text using the configured provider", async () => {
@@ -35,14 +35,14 @@ describe("ai.dialog.generate / ai.image.generate", () => {
     });
 
     it("throws when the provider does not support dialog generation", async () => {
-        initAI({ provider: { name: "image-only", image: provider.image } });
+        ai.init({ provider: { name: "image-only", image: provider.image } });
         await expect(ai.dialog.generate("Say hello.")).rejects.toThrow(
             /does not support dialog generation/,
         );
     });
 
     it("throws when the provider does not support image generation", async () => {
-        initAI({ provider: { name: "dialog-only", dialog: provider.dialog } });
+        ai.init({ provider: { name: "dialog-only", dialog: provider.dialog } });
         await expect(ai.image.generate("Draw a garden.")).rejects.toThrow(
             /does not support image generation/,
         );

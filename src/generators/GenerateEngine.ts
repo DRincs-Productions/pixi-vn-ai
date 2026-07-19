@@ -7,7 +7,7 @@ const promptBuilder = new PromptBuilder();
 
 /**
  * Build the final prompt for a given template kind (dialog/image), applying whichever template
- * is currently configured (built-in or overridden via {@link initAI}).
+ * is currently configured (built-in or overridden via {@link ai.init}).
  */
 export function buildPrompt(
     templateKind: keyof Templates,

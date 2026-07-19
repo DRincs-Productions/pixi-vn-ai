@@ -1,5 +1,4 @@
 export { ai } from "@/ai";
-export { default as initAI, type InitAIOptions } from "./init/initAI";
 export { DefaultTemplates, DialogTemplate, ImageTemplate, PromptBuilder } from "./prompt";
 export { AISDKProvider, WebLLMProvider, type AISDKProviderOptions } from "./providers";
 export type {

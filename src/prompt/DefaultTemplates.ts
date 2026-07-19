@@ -3,7 +3,7 @@ import DialogTemplate from "./DialogTemplate";
 import ImageTemplate from "./ImageTemplate";
 
 /**
- * The built-in templates, used whenever {@link initAI} is called without (or with a partial)
+ * The built-in templates, used whenever {@link ai.init} is called without (or with a partial)
  * `templates` option.
  */
 const DefaultTemplates: Templates = {

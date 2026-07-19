@@ -12,7 +12,7 @@ import type DialogProvider from "../types/DialogProvider";
  *
  * ```ts
  * const engine = await CreateMLCEngine("Llama-3.1-8B-Instruct-q4f32_1-MLC");
- * initAI({ provider: new WebLLMProvider(engine) });
+ * ai.init({ provider: new WebLLMProvider(engine) });
  * ```
  */
 export default class WebLLMProvider implements AIProvider {

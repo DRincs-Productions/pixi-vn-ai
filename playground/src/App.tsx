@@ -2,7 +2,6 @@ import { stepHistory, type NarrationHistory } from "@drincs/pixi-vn";
 import {
     ai,
     DialogTemplate,
-    initAI,
     PromptBuilder,
     WebLLMProvider,
     type GenerateOptions,
@@ -89,7 +88,7 @@ export default function App() {
           setLoadingProgress(report.text);
         },
       });
-      initAI({ provider: new WebLLMProvider(engine) });
+      ai.init({ provider: new WebLLMProvider(engine) });
       setModelReady(true);
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));

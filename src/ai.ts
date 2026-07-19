@@ -1,6 +1,8 @@
 import { buildPrompt } from "@/generators/GenerateEngine";
-import { getAIState } from "@/init/AIState";
+import { getAIState, setAIState } from "@/init/AIState";
 import type { GenerateOptions } from "@/types";
+import type AIProvider from "@/types/AIProvider";
+import type Templates from "@/types/Templates";
 
 /**
  * The small, provider-independent public API of Pixi'VN AI.
@@ -10,6 +12,24 @@ import type { GenerateOptions } from "@/types";
  * {@link GenerateOptions} passed in (narrative history, speaker, listeners, scene, ...).
  */
 export namespace ai {
+    /**
+     * Initialize Pixi'VN AI. Call this once, typically at application startup, before using
+     * `ai.dialog.generate` or `ai.image.generate`.
+     * @param options The provider (required) and templates (optional) to use.
+     */
+    export function init(options: {
+        /**
+         * The provider used by the whole library (WebLLM, an AI SDK model, or a custom provider).
+         */
+        provider: AIProvider;
+        /**
+         * Templates to override the built-in ones. Any template left out falls back to the default.
+         */
+        templates?: Partial<Templates>;
+    }): void {
+        setAIState(options.provider, options.templates);
+    }
+
     export namespace dialog {
         /**
          * Generate a dialogue from a developer request, completely hiding prompt engineering.
