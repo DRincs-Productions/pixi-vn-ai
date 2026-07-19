@@ -1,16 +1,20 @@
 import type {
+    BackgroundImageGenerateOptions,
     DialogGenerateOptions,
-    ImageGenerateOptions,
+    ElementImageGenerateOptions,
     PromptSection,
     PromptTemplate,
 } from "@/types";
 import { stepHistory } from "@drincs/pixi-vn/history";
 
 /**
- * The union of every field {@link DialogGenerateOptions} and {@link ImageGenerateOptions} can
- * carry, since the builder assembles sections for both without knowing which one it was called for.
+ * The union of every field {@link DialogGenerateOptions}, {@link BackgroundImageGenerateOptions}
+ * and {@link ElementImageGenerateOptions} can carry, since the builder assembles sections for all
+ * of them without knowing which one it was called for.
  */
-type PromptOptions = DialogGenerateOptions & ImageGenerateOptions;
+type PromptOptions = DialogGenerateOptions &
+    BackgroundImageGenerateOptions &
+    ElementImageGenerateOptions;
 
 /**
  * Centralizes prompt construction so that generators never concatenate strings directly.
@@ -25,60 +29,105 @@ export namespace PromptBuilder {
      * @param template The template supplying the instructions section.
      * @param request The developer's natural language request.
      * @param options The generate options driving which sections get included.
+     * @param extraSections Additional sections appended at the end, e.g. the canvas size for
+     *   {@link ai.image.generateBackground}. Callers that read state {@link PromptBuilder} doesn't
+     *   have access to (like Pixi'VN's canvas) are responsible for building these themselves.
      */
     export function buildSections(
         template: PromptTemplate,
         request: string,
         options: PromptOptions = {},
+        extraSections: PromptSection[] = [],
     ): PromptSection[] {
         const sections: PromptSection[] = [];
+        const {
+            speaker,
+            listeners,
+            history = true,
+            context,
+            scene,
+            style,
+            language,
+            referenceImage,
+            backgroundImage,
+            xAlign,
+            yAlign,
+        } = options;
 
-        if (template.instructions) {
-            sections.push({ title: "Instructions", content: template.instructions });
-        }
-
+        sections.push({ title: "Instructions", content: template.instructions });
         sections.push({ title: "Developer Request", content: request });
 
-        if (options.history) {
+        if (history) {
             const historyJson = getNarrativeHistoryJson();
             if (historyJson) {
                 sections.push({ title: "Narrative History", content: historyJson });
             }
         }
 
-        if (options.scene) {
-            sections.push({ title: "Scene", content: options.scene });
+        if (scene) {
+            sections.push({ title: "Scene", content: scene });
         }
 
-        if (options.style) {
-            sections.push({ title: "Style", content: options.style });
+        if (style) {
+            sections.push({ title: "Style", content: style });
         }
 
-        if (options.language) {
-            sections.push({ title: "Language", content: options.language });
+        if (language) {
+            sections.push({ title: "Language", content: language });
         }
 
-        if (options.context) {
-            sections.push({ title: "Context", content: options.context });
+        if (context) {
+            sections.push({ title: "Context", content: context });
         }
 
-        const speakerJson = serializeObject(options.speaker);
-        if (speakerJson) {
-            sections.push({ title: "Speaker", content: speakerJson });
+        if (speaker) {
+            const speakerJson = serializeObject(speaker);
+            if (speakerJson) {
+                sections.push({ title: "Speaker", content: speakerJson });
+            }
         }
 
-        const listenersJson = serializeObject(options.listeners);
-        if (listenersJson) {
-            sections.push({ title: "Listeners", content: listenersJson });
+        if (listeners) {
+            const listenersJson = serializeObject(listeners);
+            if (listenersJson) {
+                sections.push({ title: "Listeners", content: listenersJson });
+            }
         }
 
-        if (options.referenceImage !== undefined && options.referenceImage !== null) {
+        if (referenceImage) {
             sections.push({
                 title: "Reference Image",
                 content:
                     "A reference image has been provided and should be used as visual guidance.",
             });
         }
+
+        if (backgroundImage) {
+            sections.push({
+                title: "Background Reference",
+                content:
+                    "The background image this element will be placed over has been provided: use it as visual guidance for lighting, perspective and scale.",
+            });
+        }
+
+        if (xAlign !== undefined || yAlign !== undefined) {
+            sections.push({
+                title: "Alignment",
+                content: [
+                    "The element will be positioned on the canvas using the following alignment (0-1 fraction of the distance from each edge; 0 = flush against the start edge, 1 = flush against the end edge, 0.5 = centered):",
+                    xAlign !== undefined
+                        ? `xAlign (horizontal, from the left edge): ${xAlign}`
+                        : undefined,
+                    yAlign !== undefined
+                        ? `yAlign (vertical, from the top edge): ${yAlign}`
+                        : undefined,
+                ]
+                    .filter((line) => line !== undefined)
+                    .join("\n"),
+            });
+        }
+
+        sections.push(...extraSections);
 
         return sections;
     }
@@ -88,13 +137,15 @@ export namespace PromptBuilder {
      * @param template The template supplying the instructions section.
      * @param request The developer's natural language request.
      * @param options The generate options driving which sections get included.
+     * @param extraSections Additional sections appended at the end.
      */
     export function build(
         template: PromptTemplate,
         request: string,
         options: PromptOptions = {},
+        extraSections: PromptSection[] = [],
     ): string {
-        return buildSections(template, request, options)
+        return buildSections(template, request, options, extraSections)
             .map((section) => `## ${section.title}\n${section.content}`)
             .join("\n\n");
     }

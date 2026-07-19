@@ -1,7 +1,7 @@
 import type GenerateOptions from "./GenerateOptions";
 
 /**
- * Options accepted by {@link ai.image.generate}.
+ * Options shared by {@link ai.image.generateBackground} and {@link ai.image.generateElement}.
  */
 export default interface ImageGenerateOptions extends GenerateOptions {
     /**

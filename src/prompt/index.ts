@@ -1,2 +1,6 @@
 export { PromptBuilder } from "./PromptBuilder";
-export { DEAFAULT_IMAGE_TEMPLATE, DEFAULT_DIALOG_TEMPLATE } from "./templates";
+export {
+    DEFAULT_BACKGROUND_IMAGE_TEMPLATE,
+    DEFAULT_DIALOG_TEMPLATE,
+    DEFAULT_ELEMENT_IMAGE_TEMPLATE,
+} from "./templates";

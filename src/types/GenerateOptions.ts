@@ -8,8 +8,8 @@ export default interface GenerateOptions {
     /**
      * Include the Pixi'VN narrative history.
      *
-     * When true, the history is retrieved directly from Pixi'VN and serialized into JSON.
-     * @default false
+     * When not false, the history is retrieved directly from Pixi'VN and serialized into JSON.
+     * @default true
      */
     history?: boolean;
     /**

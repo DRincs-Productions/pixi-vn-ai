@@ -1,9 +1,19 @@
 import { getAIState, setAIState } from "@/init/AIState";
-import { DEAFAULT_IMAGE_TEMPLATE, DEFAULT_DIALOG_TEMPLATE, PromptBuilder } from "@/prompt";
+import {
+    DEFAULT_BACKGROUND_IMAGE_TEMPLATE,
+    DEFAULT_DIALOG_TEMPLATE,
+    DEFAULT_ELEMENT_IMAGE_TEMPLATE,
+    PromptBuilder,
+} from "@/prompt";
 import AISDKProvider from "@/providers/AISDKProvider";
 import WebLLMProvider from "@/providers/WebLLMProvider";
-import type { DialogGenerateOptions, ImageGenerateOptions } from "@/types";
+import type {
+    BackgroundImageGenerateOptions,
+    DialogGenerateOptions,
+    ElementImageGenerateOptions,
+} from "@/types";
 import type PromptTemplate from "@/types/PromptTemplate";
+import { canvas } from "@drincs/pixi-vn/canvas";
 import { CreateMLCEngine } from "@mlc-ai/web-llm";
 import type { ImageModel, LanguageModel } from "ai";
 
@@ -15,14 +25,14 @@ const DEFAULT_WEBLLM_MODEL = "SmolLM2-360M-Instruct-q4f16_1-MLC";
 /**
  * The small, provider-independent public API of Pixi'VN AI.
  *
- * Prompt engineering is entirely hidden: `ai.dialog.generate` and `ai.image.generate` build the
- * final prompt internally from the developer request, the configured templates, and the
- * {@link GenerateOptions} passed in (narrative history, speaker, listeners, scene, ...).
+ * Prompt engineering is entirely hidden: `ai.dialog.generate`, `ai.image.generateBackground` and
+ * `ai.image.generateElement` build the final prompt internally from the developer request, the
+ * configured templates, and the {@link GenerateOptions} passed in (narrative history, scene, ...).
  */
 export namespace ai {
     /**
      * Initialize Pixi'VN AI. Call this once, typically at application startup, before using
-     * `ai.dialog.generate` or `ai.image.generate`.
+     * `ai.dialog.generate`, `ai.image.generateBackground` or `ai.image.generateElement`.
      *
      * When neither option is given, a small local [WebLLM](https://github.com/mlc-ai/web-llm)
      * model is downloaded and used for dialogue generation (no image support).
@@ -30,12 +40,12 @@ export namespace ai {
      */
     export async function init(options?: {
         /**
-         * Language model used for `ai.dialog.generate`, and as a fallback for `ai.image.generate`
-         * on multimodal models (e.g. Gemini image generation).
+         * Language model used for `ai.dialog.generate`, and as a fallback for image generation on
+         * multimodal models (e.g. Gemini image generation).
          */
         textProvider?: LanguageModel;
         /**
-         * Image model used for `ai.image.generate`.
+         * Image model used for `ai.image.generateBackground` and `ai.image.generateElement`.
          */
         imageProvider?: ImageModel;
     }): Promise<void> {
@@ -52,15 +62,22 @@ export namespace ai {
     }
 
     /**
-     * The templates used to build the prompts sent by `ai.dialog.generate` and `ai.image.generate`.
+     * The templates used to build the prompts sent by `ai.dialog.generate`,
+     * `ai.image.generateBackground` and `ai.image.generateElement`.
      *
-     * Assign to `templates.dialog` / `templates.image` to override the built-in template.
+     * Assign to `templates.dialog` / `templates.image.background` / `templates.image.element` to
+     * override the built-in template.
      */
     export namespace templates {
         // biome-ignore lint/style/useConst: reassigned by consumers, e.g. `templates.dialog = {...}`
         export let dialog: PromptTemplate = DEFAULT_DIALOG_TEMPLATE;
-        // biome-ignore lint/style/useConst: reassigned by consumers, e.g. `templates.image = {...}`
-        export let image: PromptTemplate = DEAFAULT_IMAGE_TEMPLATE;
+
+        export namespace image {
+            // biome-ignore lint/style/useConst: reassigned by consumers, e.g. `templates.image.background = {...}`
+            export let background: PromptTemplate = DEFAULT_BACKGROUND_IMAGE_TEMPLATE;
+            // biome-ignore lint/style/useConst: reassigned by consumers, e.g. `templates.image.element = {...}`
+            export let element: PromptTemplate = DEFAULT_ELEMENT_IMAGE_TEMPLATE;
+        }
     }
 
     export namespace dialog {
@@ -86,14 +103,18 @@ export namespace ai {
     }
     export namespace image {
         /**
-         * Generate an image from a developer request, completely hiding prompt engineering.
-         * @param request Natural language description of the image to generate.
+         * Generate a background image from a developer request, completely hiding prompt
+         * engineering.
+         *
+         * The image is meant to fill the whole game canvas: its size is read directly from
+         * Pixi'VN and included in the prompt, so it never has to be passed manually.
+         * @param request Natural language description of the background to generate.
          * @param options Options controlling which context gets included in the prompt.
          * @returns The generated image. The shape depends on the configured provider.
          */
-        export async function generate(
+        export async function generateBackground(
             request: string,
-            options?: ImageGenerateOptions,
+            options?: BackgroundImageGenerateOptions,
         ): Promise<unknown> {
             const { provider } = getAIState();
             if (!provider.image) {
@@ -101,8 +122,39 @@ export namespace ai {
                     `Pixi'VN AI: provider "${provider.name}" does not support image generation.`,
                 );
             }
-            const prompt = PromptBuilder.build(templates.image, request, options);
+            const prompt = PromptBuilder.build(templates.image.background, request, options, [
+                { title: "Canvas Size", content: `${canvas.width}x${canvas.height}` },
+            ]);
             return provider.image.generateImage(prompt, options?.referenceImage);
+        }
+
+        /**
+         * Generate a single visual element (e.g. a character) from a developer request,
+         * completely hiding prompt engineering.
+         *
+         * The image is meant to be layered on top of other visuals: the area behind the subject
+         * is transparent, and {@link ElementImageGenerateOptions.xAlign}/
+         * {@link ElementImageGenerateOptions.yAlign} describe where it will be positioned so the
+         * model can compose it accordingly.
+         * @param request Natural language description of the element to generate.
+         * @param options Options controlling which context gets included in the prompt.
+         * @returns The generated image. The shape depends on the configured provider.
+         */
+        export async function generateElement(
+            request: string,
+            options?: ElementImageGenerateOptions,
+        ): Promise<unknown> {
+            const { provider } = getAIState();
+            if (!provider.image) {
+                throw new Error(
+                    `Pixi'VN AI: provider "${provider.name}" does not support image generation.`,
+                );
+            }
+            const prompt = PromptBuilder.build(templates.image.element, request, options);
+            return provider.image.generateImage(
+                prompt,
+                options?.referenceImage ?? options?.backgroundImage,
+            );
         }
     }
 }
