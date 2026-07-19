@@ -70,7 +70,7 @@ describe("PromptBuilder", () => {
         });
         const speakerSection = sections.find((s) => s.title === "Speaker");
         expect(speakerSection).toBeDefined();
-        expect(JSON.parse(speakerSection!.content)).toEqual({ name: "King" });
+        expect(JSON.parse(speakerSection!.content)).toEqual([{ name: "King" }]);
     });
 
     it("builds a single prompt string with all sections", () => {

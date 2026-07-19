@@ -5,6 +5,8 @@ import type {
     PromptSection,
     PromptTemplate,
 } from "@/types";
+import type { CharacterItem } from "@/types/CharacterItem";
+import { RegisteredCharacters } from "@drincs/pixi-vn";
 import { stepHistory } from "@drincs/pixi-vn/history";
 
 /**
@@ -60,7 +62,11 @@ export namespace PromptBuilder {
         if (history) {
             const historyJson = getNarrativeHistoryJson();
             if (historyJson) {
-                sections.push({ title: "Narrative History", content: historyJson });
+                sections.push({
+                    title: "Narrative History",
+                    description: "The narrative history so far, serialized as JSON.",
+                    content: historyJson,
+                });
             }
         }
 
@@ -73,7 +79,11 @@ export namespace PromptBuilder {
         }
 
         if (language) {
-            sections.push({ title: "Language", content: language });
+            sections.push({
+                title: "Language",
+                description: "The language the generated content must be written in.",
+                content: language,
+            });
         }
 
         if (context) {
@@ -81,16 +91,24 @@ export namespace PromptBuilder {
         }
 
         if (speaker) {
-            const speakerJson = serializeObject(speaker);
+            const speakerJson = getCharactersJson(speaker);
             if (speakerJson) {
-                sections.push({ title: "Speaker", content: speakerJson });
+                sections.push({
+                    title: "Speaker",
+                    description: "The character(s) speaking, serialized as JSON.",
+                    content: speakerJson,
+                });
             }
         }
 
         if (listeners) {
-            const listenersJson = serializeObject(listeners);
+            const listenersJson = getCharactersJson(listeners);
             if (listenersJson) {
-                sections.push({ title: "Listeners", content: listenersJson });
+                sections.push({
+                    title: "Listeners",
+                    description: "The character(s) receiving the dialogue, serialized as JSON.",
+                    content: listenersJson,
+                });
             }
         }
 
@@ -113,8 +131,9 @@ export namespace PromptBuilder {
         if (xAlign !== undefined || yAlign !== undefined) {
             sections.push({
                 title: "Alignment",
+                description:
+                    "Where the element will be positioned on the canvas, as a 0-1 fraction of the distance from each edge (0 = flush against the start edge, 1 = flush against the end edge, 0.5 = centered).",
                 content: [
-                    "The element will be positioned on the canvas using the following alignment (0-1 fraction of the distance from each edge; 0 = flush against the start edge, 1 = flush against the end edge, 0.5 = centered):",
                     xAlign !== undefined
                         ? `xAlign (horizontal, from the left edge): ${xAlign}`
                         : undefined,
@@ -146,8 +165,28 @@ export namespace PromptBuilder {
         extraSections: PromptSection[] = [],
     ): string {
         return buildSections(template, request, options, extraSections)
-            .map((section) => `## ${section.title}\n${section.content}`)
+            .map(formatSection)
             .join("\n\n");
+    }
+
+    /**
+     * Format a single section as a Markdown block (heading, optional description, content).
+     */
+    function formatSection(section: PromptSection): string {
+        const { title, description, content } = section;
+        if (description) {
+            return `### ${title}
+
+${description}
+
+\`\`\`
+${content}
+\`\`\``;
+        } else {
+            return `### ${title}
+
+${content}`;
+        }
     }
 
     /**
@@ -166,21 +205,27 @@ export namespace PromptBuilder {
     }
 
     /**
-     * Serialize a developer-provided object (or array of objects) into JSON.
-     *
-     * Pixi'VN AI never defines a `Character` model: developers pass whatever serializable shape
-     * fits their game (a Pixi'VN `Character`, a plain object, a string, ...) and this is the only
-     * place that turns it into prompt-ready JSON.
-     * @param value The value to serialize. `undefined`/`null` are treated as "not provided".
+     * Serialize one or more characters into JSON, resolving character IDs against Pixi'VN's
+     * {@link RegisteredCharacters} so the model sees full character data instead of a bare ID.
+     * @param characters The character(s) to serialize.
      * @returns The serialized value, or undefined if there is nothing to inject.
      */
-    function serializeObject(value: unknown): string | undefined {
-        if (value === undefined || value === null) {
+    function getCharactersJson(characters: CharacterItem | CharacterItem[]): string | undefined {
+        if (!Array.isArray(characters)) {
+            characters = [characters];
+        }
+        if (characters.length === 0) {
             return undefined;
         }
-        if (Array.isArray(value) && value.length === 0) {
-            return undefined;
-        }
-        return JSON.stringify(value, null, 2);
+        return JSON.stringify(
+            characters.map((character) => {
+                if (typeof character === "string") {
+                    return RegisteredCharacters.get(character) || { id: character };
+                }
+                return character;
+            }),
+            null,
+            2,
+        );
     }
 }

@@ -1,7 +1,5 @@
-import type { CharacterIdType, CharacterInterface } from "@drincs/pixi-vn";
+import type { CharacterItem } from "@/types/CharacterItem";
 import type GenerateOptions from "./GenerateOptions";
-
-type CharacterItem = CharacterInterface | CharacterIdType;
 
 /**
  * Options accepted by {@link ai.text.generateDialog}.

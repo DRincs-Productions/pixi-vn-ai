@@ -11,6 +11,12 @@ export default interface PromptSection {
      */
     title: string;
     /**
+     * Explains what {@link content} is and how to interpret it, for content that isn't
+     * self-descriptive (e.g. a serialized JSON object or array). Omit when the title and content
+     * are already clear on their own (e.g. plain developer-provided text).
+     */
+    description?: string;
+    /**
      * Body of the section. Plain text or a serialized JSON string.
      */
     content: string;
