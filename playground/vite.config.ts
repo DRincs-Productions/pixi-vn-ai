@@ -6,6 +6,8 @@ export default defineConfig({
     plugins: [react()],
     resolve: {
         alias: {
+            "@drincs/pixi-vn-ai/prompt": resolve(__dirname, "../src/prompt/index.ts"),
+            "@drincs/pixi-vn-ai/providers": resolve(__dirname, "../src/providers/index.ts"),
             "@drincs/pixi-vn-ai": resolve(__dirname, "../src/index.ts"),
             // needed for the library's internal "@/" imports (e.g. "@/functions/...")
             "@": resolve(__dirname, "../src"),

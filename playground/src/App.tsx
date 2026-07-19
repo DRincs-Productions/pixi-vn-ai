@@ -1,10 +1,6 @@
 import { stepHistory, type NarrationHistory } from "@drincs/pixi-vn";
-import {
-  ai,
-  DEFAULT_DIALOG_TEMPLATE,
-  PromptBuilder,
-  type DialogGenerateOptions,
-} from "@drincs/pixi-vn-ai";
+import { ai, type DialogGenerateOptions } from "@drincs/pixi-vn-ai";
+import { DEFAULT_DIALOG_TEMPLATE, PromptBuilder } from "@drincs/pixi-vn-ai/prompt";
 import { useEffect, useState } from "react";
 import { runIntroLabel } from "./labels/introLabel";
 

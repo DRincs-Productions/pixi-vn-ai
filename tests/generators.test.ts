@@ -60,7 +60,7 @@ describe("ai.image.generateBackground / ai.image.generateElement", () => {
         expect(prompt).toContain(fakeBase64("ref.png"));
     });
 
-    it("generates an element image, resolving the background image as reference and including alignment", async () => {
+    it("embeds the background image in the prompt (but only referenceImage is forwarded to the provider) and includes alignment", async () => {
         const result = await ai.image.generateElement("Generate the advisor.", {
             backgroundImage: "bg.png",
             align: { x: 0.8, y: 1 },
@@ -69,23 +69,26 @@ describe("ai.image.generateBackground / ai.image.generateElement", () => {
         expect(utilsMock.resolveAssetImage).toHaveBeenCalledWith("bg.png");
         expect(providerMock.Provider.generateImage).toHaveBeenCalledWith(
             expect.any(String),
-            fakeBase64("bg.png"),
+            undefined,
         );
         const prompt = providerMock.Provider.generateImage.mock.calls[0][0];
+        expect(prompt).toContain(fakeBase64("bg.png"));
         expect(prompt).toContain("## Alignment");
         expect(prompt).toContain('"x": 0.8');
         expect(prompt).toContain('"y": 1');
     });
 
-    it("captures the current canvas when backgroundImage is true", async () => {
+    it("captures the current canvas into the prompt when backgroundImage is true, without forwarding it to the provider", async () => {
         await ai.image.generateElement("Generate the advisor.", {
             backgroundImage: true,
         });
         expect(utilsMock.resolveAssetImage).toHaveBeenCalledWith(true);
         expect(providerMock.Provider.generateImage).toHaveBeenCalledWith(
             expect.any(String),
-            fakeBase64(true),
+            undefined,
         );
+        const prompt = providerMock.Provider.generateImage.mock.calls[0][0];
+        expect(prompt).toContain(fakeBase64(true));
     });
 
     it("prefers the explicit reference image over the background image for an element", async () => {

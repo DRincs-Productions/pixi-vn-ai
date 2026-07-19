@@ -31,6 +31,18 @@
       "import": "./dist/index.mjs",
       "require": "./dist/index.cjs",
       "default": "./dist/index.mjs"
+    },
+    "./prompt": {
+      "types": "./dist/prompt.d.ts",
+      "import": "./dist/prompt.mjs",
+      "require": "./dist/prompt.cjs",
+      "default": "./dist/prompt.mjs"
+    },
+    "./providers": {
+      "types": "./dist/providers.d.ts",
+      "import": "./dist/providers.mjs",
+      "require": "./dist/providers.cjs",
+      "default": "./dist/providers.mjs"
     }
   },
   "devDependencies": {

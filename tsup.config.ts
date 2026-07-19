@@ -5,6 +5,8 @@ export default defineConfig([
         target: "es2020",
         entry: {
             index: "src/index.ts",
+            prompt: "src/prompt/index.ts",
+            providers: "src/providers/index.ts",
         },
         format: ["cjs", "esm"],
         dts: true,
