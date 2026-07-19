@@ -53,6 +53,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^2.4.12",
+    "@stable-canvas/comfyui-client": "^1.5.9",
     "jsdom": "^29.0.2",
     "ts-node": "^10.9.2",
     "tsup": "^8.5.1",
