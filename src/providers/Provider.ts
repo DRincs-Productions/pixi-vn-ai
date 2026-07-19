@@ -1,3 +1,4 @@
+import { toDataUri } from "@/utils";
 import { CreateMLCEngine, type MLCEngineInterface } from "@mlc-ai/web-llm";
 import {
     generateImage as aiGenerateImage,
@@ -91,18 +92,16 @@ export namespace Provider {
      * a reference image is given. [WebLLM](https://github.com/mlc-ai/web-llm) does not support
      * image generation, so calling this without either provider set throws.
      * @param prompt The final prompt produced by the {@link PromptBuilder}.
-     * @param referenceImage Optional reference image, forwarded to providers that support
+     * @param referenceImage Optional reference image (a URL or a data URI, e.g. the string
+     *   returned by a previous call to this function), forwarded to providers that support
      *   image-to-image generation.
-     * @returns The generated image. The shape is provider-specific.
+     * @returns The generated image, as a data URI (`data:<mediaType>;base64,<data>`), ready to
+     *   use directly as a Pixi'VN image source.
      */
-    export async function generateImage(
-        prompt: string,
-        referenceImage?: unknown,
-    ): Promise<unknown> {
+    export async function generateImage(prompt: string, referenceImage?: string): Promise<string> {
         const { imageProvider, textProvider } = providers;
-        const hasReferenceImage = referenceImage !== undefined && referenceImage !== null;
 
-        if (hasReferenceImage && textProvider) {
+        if (referenceImage !== undefined && textProvider) {
             // generateImage() is text-to-image only: reference images need a multimodal
             // language model (e.g. Gemini image generation) driven through generateText().
             const result = await aiGenerateText({
@@ -112,22 +111,28 @@ export namespace Provider {
                         role: "user",
                         content: [
                             { type: "text", text: prompt },
-                            { type: "image", image: referenceImage as never },
+                            { type: "image", image: referenceImage },
                         ],
                     },
                 ],
             });
-            return result.files[0] ?? result.text;
+            if (!result.files[0]) {
+                throw new Error("Pixi'VN AI: the model did not return an image.");
+            }
+            return toDataUri(result.files[0]);
         }
 
         if (imageProvider) {
             const result = await aiGenerateImage({ model: imageProvider, prompt });
-            return result.image;
+            return toDataUri(result.image);
         }
 
         if (textProvider) {
             const result = await aiGenerateText({ model: textProvider, prompt });
-            return result.files[0] ?? result.text;
+            if (!result.files[0]) {
+                throw new Error("Pixi'VN AI: the model did not return an image.");
+            }
+            return toDataUri(result.files[0]);
         }
 
         throw new Error(

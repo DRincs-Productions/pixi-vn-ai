@@ -1,12 +1,11 @@
-import { getAIState, setAIState } from "@/init/AIState";
+import { getAIState } from "@/init/AIState";
 import {
     DEFAULT_BACKGROUND_IMAGE_TEMPLATE,
     DEFAULT_DIALOG_TEMPLATE,
     DEFAULT_ELEMENT_IMAGE_TEMPLATE,
     PromptBuilder,
 } from "@/prompt";
-import AISDKProvider from "@/providers/AISDKProvider";
-import WebLLMProvider from "@/providers/WebLLMProvider";
+import { Provider } from "@/providers";
 import type {
     BackgroundImageGenerateOptions,
     DialogGenerateOptions,
@@ -14,13 +13,7 @@ import type {
 } from "@/types";
 import type PromptTemplate from "@/types/PromptTemplate";
 import { canvas } from "@drincs/pixi-vn/canvas";
-import { CreateMLCEngine } from "@mlc-ai/web-llm";
 import type { ImageModel, LanguageModel } from "ai";
-
-/**
- * Built-in local model used by `ai.init` when neither `textProvider` nor `imageProvider` is given.
- */
-const DEFAULT_WEBLLM_MODEL = "SmolLM2-360M-Instruct-q4f16_1-MLC";
 
 /**
  * The small, provider-independent public API of Pixi'VN AI.
@@ -49,16 +42,7 @@ export namespace ai {
          */
         imageProvider?: ImageModel;
     }): Promise<void> {
-        const { textProvider, imageProvider } = options ?? {};
-        if (textProvider || imageProvider) {
-            setAIState(
-                new AISDKProvider({ languageModel: textProvider, imageModel: imageProvider }),
-            );
-            return;
-        }
-
-        const engine = await CreateMLCEngine(DEFAULT_WEBLLM_MODEL);
-        setAIState(new WebLLMProvider(engine));
+        return await Provider.init(options);
     }
 
     /**
