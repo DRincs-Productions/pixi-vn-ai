@@ -1,4 +1,5 @@
 export type { default as BackgroundImageGenerateOptions } from "./BackgroundImageGenerateOptions";
+export type { CharacterItem } from "./CharacterItem";
 export type { default as DialogGenerateOptions } from "./DialogGenerateOptions";
 export type { default as ElementImageGenerateOptions } from "./ElementImageGenerateOptions";
 export type { default as GenerateOptions } from "./GenerateOptions";
